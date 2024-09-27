@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather, Currency, and News</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+    <h1>Weather, Currency, and News Dashboard</h1>
+</header>
+
+<section>
+    <h2>Weather</h2>
+    <input type="text" id="weatherCity" placeholder="Enter city">
+    <button onclick="getWeather()">Get Weather</button>
+    <div id="weatherResult"></div>
+</section>
+
+<section>
+    <h2>Currency Exchange</h2>
+    <input type="text" id="currencyCode" placeholder="Enter currency (e.g., USD)">
+    <button onclick="getCurrency()">Get Exchange Rate</button>
+    <div id="currencyResult"></div>
+</section>
+
+<section>
+    <h2>Top News</h2>
+    <button onclick="getNews()">Get Latest News</button>
+    <div id="newsResult"></div>
+</section>
+
+<footer>
+    <p>Alisher Ramazan - BDA-2302</p>
+</footer>
+
+<script>
+    // Fetch Weather
+    async function getWeather() {
+        const city = document.getElementById('weatherCity').value;
+        const response = await fetch(`/api/weather/${city}`);
+        const data = await response.json();
+        document.getElementById('weatherResult').innerHTML = `
+        <p>City: ${data.name}</p>
+        <p>Temperature: ${data.main.temp}°C</p>
+        <p>Feels Like: ${data.main.feels_like}°C</p>
+        <p>Description: ${data.weather[0].description}</p>
+        <p>Humidity: ${data.main.humidity}%</p>
+        <p>Pressure: ${data.main.pressure} hPa</p>
+        <p>Wind Speed: ${data.wind.speed} m/s</p>
+        <p>Coordinates: [${data.coord.lat}, ${data.coord.lon}]</p>
+      `;
+    }
+
+    // Fetch Currency
+    async function getCurrency() {
+        const currency = document.getElementById('currencyCode').value;
+        const response = await fetch(`/api/currency/${currency}`);
+        const data = await response.json();
+        document.getElementById('currencyResult').innerHTML = `
+        <p>Currency: ${currency}</p>
+        <p>Exchange Rate: 1 ${currency} = ${data.conversion_rates.KZT} KZT</p>
+      `;
+    }
+
+    // Fetch News
+    async function getNews() {
+        const response = await fetch(`/api/news`);
+        const data = await response.json();
+        const newsHtml = data.articles.map(article => `
+        <p><strong>${article.title}</strong></p>
+        <p>${article.description}</p>
+        <a href="${article.url}" target="_blank">Read more</a>
+      `).join('');
+        document.getElementById('newsResult').innerHTML = newsHtml;
+    }
+</script>
+</body>
+</html>
